@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         val btnOneTimeRequest = findViewById<Button>(R.id.btnOneTimeRequest)
         val tvOneTimeRequest = findViewById<TextView>(R.id.tvOneTimeRequest)
+        val btnPeriodicRequest = findViewById<Button>(R.id.btnPeriodicRequest)
 
         btnOneTimeRequest.setOnClickListener {
             val oneTimeRequestConstraints = Constraints.Builder()
@@ -98,6 +99,23 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 })
+        }
+
+        btnPeriodicRequest.setOnClickListener {
+            val periodicRequestConstraints = Constraints.Builder()
+                .setRequiresCharging(false)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresBatteryNotLow(true)
+                .build()
+
+            val periodicWorkRequest = PeriodicWorkRequest.Builder(
+                PeriodicRequestWorker::class.java,
+                15,
+                TimeUnit.MINUTES
+            )
+                .setConstraints(periodicRequestConstraints)
+                .build()
+            WorkManager.getInstance(this@MainActivity).enqueueUniquePeriodicWork("Periodic Work Request", ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest)
         }
     }
 }
